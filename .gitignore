@@ -1,0 +1,42 @@
+﻿# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Environment & secrets
+.env
+.env.*
+*.env
+
+# Local Chroma Vector DB
+chroma_db/
+
+# ===================================================
+# CONFIDENTIAL KNOWLEDGE BASE PROTECTION (DATA LEAK PREVENTION)
+# Keeps the folder structure on GitHub, but ignores ALL company files
+# ===================================================
+backend/knowledge/employee/*
+!backend/knowledge/employee/.gitkeep
+!backend/knowledge/employee/sample_policy.txt.example
+
+backend/knowledge/public/*
+!backend/knowledge/public/.gitkeep
+!backend/knowledge/public/sample_public.txt.example
+
+# OS files
+.DS_Store
+Thumbs.db

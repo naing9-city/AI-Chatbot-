@@ -1,0 +1,265 @@
+/* ========================================================
+   CUSTOM CSS — iOS MORPHING ENGINE & SPRING ANIMATIONS
+   ======================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #e9eaec61;
+  min-height: 100vh;
+}
+
+/* ------- Morph Container ------- */
+#chat-widget {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  transform-origin: bottom right;
+}
+
+/* Launcher (collapsed) state */
+#chat-widget.collapsed {
+  background-color: #363b99;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(54, 59, 153, 0.35);
+  transition:
+    width 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    border-radius 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    background-color 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.4s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Expanded state */
+#chat-widget.expanded {
+  background-color: #ffffff;
+  width: calc(100vw - 2rem);
+  max-width: 400px;
+  height: 580px;
+  border-radius: 34px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    width 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    border-radius 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    background-color 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.4s ease;
+  overflow: hidden;
+}
+
+/* ------- Inner content fade ------- */
+#chat-inner {
+  opacity: 0;
+  transform: scale(0.95) translateY(12px);
+  pointer-events: none;
+}
+
+/* Expand transition: delayed fade-in so it doesn't show during scale-up */
+#chat-widget.expanded #chat-inner {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  transition:
+    opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1) 0.18s,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1) 0.15s;
+}
+
+/* Collapse transition: reverse of expand, starts fading out immediately and takes 0.35s */
+#chat-widget.collapsed #chat-inner {
+  opacity: 0;
+  transform: scale(0.95) translateY(12px);
+  pointer-events: none;
+  transition:
+    opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ------- Launcher icon fade ------- */
+#launcher-icon {
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Expanded state: hide launcher icon immediately */
+#chat-widget.expanded #launcher-icon {
+  opacity: 0;
+  transform: scale(0.5) rotate(90deg);
+  pointer-events: none;
+  transition:
+    opacity 0.12s ease-out,
+    transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Collapsed state: reveal launcher icon with delay so it appears at the end of the collapse */
+#chat-widget.collapsed #launcher-icon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  transition:
+    opacity 0.25s ease 0.25s,
+    transform 0.35s cubic-bezier(0.25, 1, 0.5, 1) 0.2s;
+}
+
+/* ------- iOS Spring Message Animation ------- */
+@keyframes springUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.01);
+  }
+  80% {
+    transform: translateY(1px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.msg-spring {
+  animation: springUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+/* ------- Quick-reply spring entry (staggered) ------- */
+@keyframes springUpQuick {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qr-spring {
+  animation: springUpQuick 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+/* ------- Scroll area smooth layout shifts ------- */
+#messages-container {
+  scroll-behavior: smooth;
+}
+
+#messages-container > * {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ------- Input focus ring transition ------- */
+#msg-input {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+#msg-input:focus {
+  border-color: #363b99;
+  box-shadow: 0 0 0 3px rgba(54, 59, 153, 0.12);
+  outline: none;
+}
+
+/* ------- Button tactile press ------- */
+.btn-tactile {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-tactile:active {
+  transform: scale(0.95) !important;
+}
+
+/* ------- Quick-reply hover slide ------- */
+.qr-btn {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease, color 0.2s ease;
+}
+
+.qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(54, 59, 153, 0.15);
+}
+
+.qr-btn:active {
+  transform: scale(0.95) translateY(0);
+}
+
+/* ------- Header button hovers ------- */
+.header-btn {
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.header-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.header-btn:active {
+  transform: scale(0.9);
+}
+
+/* ------- Launcher pulse ------- */
+@keyframes launcherPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(54, 59, 153, 0.35); }
+  50% { box-shadow: 0 4px 28px rgba(54, 59, 153, 0.55); }
+}
+
+#chat-widget.collapsed:hover {
+  animation: launcherPulse 1.8s ease-in-out infinite;
+}
+
+/* ------- Typing indicator dots ------- */
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #999;
+  margin: 0 2px;
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ------- Scrollbar styling ------- */
+#messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+#messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#messages-container::-webkit-scrollbar-thumb {
+  background: #aeb1b5;
+  border-radius: 999px;
+}
+
+#messages-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ------- Bot message formatting ------- */
+.bot-message {
+  text-align: left;
+  line-height: 1.7;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

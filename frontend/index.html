@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tradewinds Plantation Berhad - Customer Support Chat</title>
+  <meta name="description" content="Customer support chat widget for Tradewinds Plantation Berhad." />
+
+  <!-- Google Fonts: Inter for premium modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            primary: '#363b99',
+            accent: '#0b73b9',
+            live: '#3fb551',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Custom CSS: Morphing engine, spring animations & micro-interactions -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHAT WIDGET — Morph Container
+       ============================================================ -->
+  <div id="chat-widget" class="collapsed">
+
+    <!-- Launcher Icon (visible when collapsed) -->
+    <div id="launcher-icon" class="absolute inset-0 flex items-center justify-center text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </div>
+
+    <!-- Chat Inner Content (visible when expanded) -->
+    <div id="chat-inner" class="flex flex-col h-full bg-white" style="border-radius: inherit;">
+
+      <!-- ===== HEADER ===== -->
+      <div class="flex items-center justify-between px-4 py-3 bg-primary text-white" style="border-radius: 24px 24px 0 0; min-height: 80px;">
+        <!-- Left: Logo + Info -->
+        <div class="flex items-center gap-3 min-w-0">
+          <!-- Company Logo Avatar (Compact & object-contain to prevent cropping) -->
+          <div class="flex-shrink-0 w-11 h-11 rounded-xl overflow-hidden bg-white p-0.5 ring-2 ring-white/20 flex items-center justify-center">
+            <img
+              src="assets/tpb.jpeg"
+              alt="Tradewinds Plantation Berhad Logo"
+              class="w-full h-full object-contain"
+            />
+          </div>
+          <!-- Name + Status -->
+          <div class="min-w-0">
+            <h1 class="text-[14.5px] sm:text-sm font-bold leading-tight whitespace-nowrap">Tradewinds Plantation Berhad Bot</h1>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="inline-block w-2 h-2 rounded-full bg-live flex-shrink-0"></span>
+              <span class="text-xs text-white/60 font-normal">We're online...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Action Buttons -->
+        <div class="flex items-center gap-1 flex-shrink-0">
+          <!-- Refresh Button -->
+          <button id="btn-refresh" class="header-btn btn-tactile w-8 h-8 flex items-center justify-center rounded-full" title="Refresh chat">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.49 9A9 9 0 005.64 5.64L4 7m16 10l-1.64 1.36A9 9 0 013.51 15" />
+            </svg>
+          </button>
+          <!-- Minimize / Close Button -->
+          <button id="btn-close" class="header-btn btn-tactile w-8 h-8 flex items-center justify-center rounded-full" title="Minimize chat">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== MODE SELECTOR ===== -->
+      <div class="bg-gray-50 border-b border-gray-200 px-4 py-2.5 flex items-center justify-between">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider select-none">Support Mode:</span>
+        <div class="flex bg-gray-200 p-0.5 rounded-lg gap-0.5">
+          <button id="btn-mode-public" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 bg-white text-primary shadow-sm btn-tactile">
+            Public
+          </button>
+          <button id="btn-mode-employee" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 text-gray-500 hover:text-gray-800 btn-tactile">
+            Employee
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== MESSAGES / SCROLL AREA ===== -->
+      <div id="messages-container" class="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-white">
+
+        <!-- Date Badge with Soft Lines -->
+        <div class="flex items-center justify-center gap-4 my-2 msg-spring" style="animation-delay: 0.05s;">
+          <div class="h-[1px] bg-gray-200 flex-1"></div>
+          <span class="text-xs text-gray-400 font-medium select-none whitespace-nowrap">
+            October 15, 2024
+          </span>
+          <div class="h-[1px] bg-gray-200 flex-1"></div>
+        </div>
+
+        <!-- Bot Message Bubble with avatar chat head, bot title, and time -->
+        <div class="flex items-start gap-2.5 msg-spring" style="animation-delay: 0.15s;">
+          <!-- Chat head (company logo) -->
+          <div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-white">
+            <img src="assets/tpb.jpeg" alt="Bot avatar" class="w-full h-full object-cover" />
+          </div>
+          <div class="max-w-[75%] min-w-0">
+            <!-- Small title name -->
+            <span class="text-[11px] font-semibold text-gray-500 mb-1 block select-none">Bot from TPB</span>
+            <div class="bg-gray-100 text-gray-800 text-sm leading-relaxed px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+              Hello! 👋 Welcome to Tradewinds Plantation Berhad. How can I assist you today? Feel free to choose from the options below or type your question.
+            </div>
+            <!-- Time -->
+            <span class="text-[10px] text-gray-400 mt-1 block pl-1 select-none">12:35pm</span>
+          </div>
+        </div>
+
+        <!-- Quick Reply Buttons Row -->
+        <div class="flex flex-wrap gap-2 pl-0 msg-spring" style="animation-delay: 0.3s;">
+          <button class="qr-btn btn-tactile bg-primary text-white text-sm font-medium px-4 py-2 rounded-full" onclick="handleQuickReply(this)">
+            🏢 What is TPB?
+          </button>
+          <button class="qr-btn btn-tactile bg-white text-gray-700 text-sm font-medium px-4 py-2 rounded-full border border-gray-300" onclick="handleQuickReply(this)">
+            🎯 What is the company vision?
+          </button>
+          <button class="qr-btn btn-tactile bg-white text-gray-700 text-sm font-medium px-4 py-2 rounded-full border border-gray-300" onclick="handleQuickReply(this)">
+            📞 How can I contact Tradewinds?
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ===== INPUT INTERFACE BLOCK ===== -->
+      <div class="border-t border-gray-200 bg-white px-3 py-2.5 flex items-center gap-2" style="border-radius: 0 0 24px 24px;">
+        <!-- Emoji Button -->
+        <button id="btn-emoji" class="btn-tactile flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200" title="Emoji">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+
+        <!-- Text Input -->
+        <input
+          id="msg-input"
+          type="text"
+          placeholder="Enter message..."
+          class="flex-1 text-sm text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-full px-4 py-2.5 font-normal"
+          autocomplete="off"
+        />
+
+        <!-- Send Button -->
+        <button id="btn-send" class="btn-tactile flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 transition-colors duration-200" title="Send message">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
+
+    </div><!-- /chat-inner -->
+
+  </div><!-- /chat-widget -->
+
+  <!-- ============================================================
+       EMPLOYEE AUTHENTICATION MODAL
+       ============================================================ -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-gray-100 msg-spring">
+      <!-- Modal Header -->
+      <div class="bg-primary px-5 py-4 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <h2 class="text-base font-bold">Employee Verification</h2>
+        </div>
+        <button id="btn-modal-close" type="button" class="text-white/80 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="auth-form" class="p-5">
+        <p class="text-xs text-gray-600 mb-3 leading-relaxed">
+          Please enter your authorized <strong>Staff ID</strong> to access employee support features and internal policies.
+        </p>
+
+        <label for="staff-id-input" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+          Staff ID
+        </label>
+        <input
+          id="staff-id-input"
+          type="text"
+          placeholder="Enter Staff ID..."
+          class="w-full text-sm text-gray-800 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all uppercase"
+          autocomplete="off"
+        />
+
+        <!-- Error Alert -->
+        <div id="auth-error-msg" class="hidden mt-2.5 flex items-center gap-2 text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="auth-error-text">Invalid Staff ID. Access denied. Please try again.</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-5 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            id="btn-modal-cancel"
+            class="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-800 rounded-lg transition-colors btn-tactile"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btn-modal-submit"
+            class="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm transition-colors btn-tactile"
+          >
+            Verify & Continue
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript: Morphing engine, chat logic & interactions -->
+  <script src="script.js"></script>
+
+</body>
+</html>
